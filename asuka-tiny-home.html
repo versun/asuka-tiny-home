@@ -5939,6 +5939,7 @@
   // A tiny resident avatar driven by asuka-status.json. The cron job updates
   // the JSON; the page polls it and moves the avatar to the matching room.
   const ASUKA_STATUS_URL = 'asuka-status.json';
+  const ASUKA_WORLD_URL = 'asuka-tiny-home.world.json';
   const ASUKA_WORLD_LOCKED = true;
   const ASUKA_PATROL_SPEED = 0.55;
   const ASUKA_PATROLS = {
@@ -9691,6 +9692,17 @@
     return applyState(data);
   }
 
+  async function loadCanonicalWorld() {
+    try {
+      const res = await fetch(ASUKA_WORLD_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('world http ' + res.status);
+      return applyState(await res.json());
+    } catch (err) {
+      console.warn('[asuka] canonical world unavailable, falling back to bundled scene:', err);
+      return false;
+    }
+  }
+
   // -------- welcome dialog --------
   // Bump WELCOME_NOTICE_ID when the welcome content has a genuinely new
   // announcement worth re-showing to previously-dismissed users.
@@ -10254,14 +10266,15 @@
 
   // -------- boot --------
   let appBooted = false;
-  function bootApp() {
+  async function bootApp() {
     if (appBooted) return;
     appBooted = true;
     if (ASUKA_WORLD_LOCKED) document.body.classList.add('asuka-readonly');
     initWelcomeDialog();
     buildToolbar();
     selectTool(DEFAULT_TOOL);
-    if (!loadState()) loadInitialScene();
+    const worldLoaded = ASUKA_WORLD_LOCKED ? await loadCanonicalWorld() : loadState();
+    if (!worldLoaded) loadInitialScene();
     resetCameraDefaults();
     ensureGhostBoardsAroundTarget();
     if (typeof buildAsukaFeatureLayer === 'function') buildAsukaFeatureLayer();
