@@ -1,13 +1,13 @@
 {
-  "activity": "训练场冲刺测试",
-  "room": "Training yard",
-  "mood": "高能，别挡路",
-  "x": 3,
-  "z": 5,
-  "pose": "train",
-  "line": "慢吞吞不是谨慎，是浪费时间。",
+  "activity": "给菜园补水，顺手吐槽低效流程",
+  "room": "Garden",
+  "mood": "负责，但不承认自己温柔",
+  "x": 6,
+  "z": 7,
+  "pose": "garden",
+  "line": "我只是确保补给不断，才不是在照顾谁。少自作多情。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-15T12:30:14+08:00",
-  "updatedAtUTC": "2026-05-15T04:30:14+00:00",
-  "slot": 5929398
+  "updatedAt": "2026-05-15T12:35:17+08:00",
+  "updatedAtUTC": "2026-05-15T04:35:17+00:00",
+  "slot": 5929399
 }
