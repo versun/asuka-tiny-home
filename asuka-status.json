@@ -1,23 +1,23 @@
 {
-  "activity": "在桥边守门，过滤笨蛋访客",
-  "room": "Moat bridge",
-  "mood": "警戒中，态度良好——对我来说",
+  "activity": "在庄园屋顶短暂休息",
+  "room": "Red manor",
+  "mood": "短暂休息，不代表松懈",
   "x": 3,
-  "z": 1,
-  "pose": "guard",
-  "line": "护城河不是装饰，是输入校验。懂？",
+  "z": 2,
+  "pose": "rest",
+  "line": "休息是为了下一次赢得更漂亮。别误会。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-16T06:25:35+08:00",
-  "updatedAtUTC": "2026-05-15T22:25:35+00:00",
-  "slot": 5929613,
+  "updatedAt": "2026-05-16T06:30:37+08:00",
+  "updatedAtUTC": "2026-05-15T22:30:37+00:00",
+  "slot": 5929614,
   "actionLog": [
     {
-      "time": "06:25",
-      "text": "在桥边守门，过滤笨蛋访客"
+      "time": "06:30",
+      "text": "在庄园屋顶短暂休息"
     },
     {
-      "time": "06:25",
-      "text": "护城河不是装饰，是输入校验。懂？"
+      "time": "06:30",
+      "text": "休息是为了下一次赢得更漂亮。别误会。"
     }
   ],
   "mapAdditions": []
