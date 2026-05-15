@@ -5998,6 +5998,9 @@
     const black = new THREE.MeshLambertMaterial({ color: 0x28221f });
     const white = new THREE.MeshLambertMaterial({ color: 0xf7efe2 });
     const yellow = new THREE.MeshLambertMaterial({ color: 0xffd85a });
+    const green = new THREE.MeshLambertMaterial({ color: 0x4fd6b2 });
+    const suitLine = new THREE.MeshLambertMaterial({ color: 0x3b0f10 });
+    const shadow = new THREE.MeshLambertMaterial({ color: 0x5a1d14 });
 
     const pelvis = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.11, 0.13), redD);
     pelvis.position.y = 0.18;
@@ -6014,48 +6017,92 @@
     const syncClip = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.026, 0.027), white);
     syncClip.position.set(0, 0.50, -0.13);
     g.add(syncClip);
+    const core = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.035, 0.03), green);
+    core.position.set(0, 0.445, -0.138);
+    g.add(core);
+    const waistLine = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.018, 0.025), suitLine);
+    waistLine.position.set(0, 0.285, -0.116);
+    g.add(waistLine);
+    function shoulder(side) {
+      const pad = new THREE.Mesh(new THREE.BoxGeometry(0.095, 0.045, 0.07), redD);
+      pad.position.set(side * 0.13, 0.53, -0.012);
+      pad.rotation.z = side * 0.18;
+      g.add(pad);
+    }
+    shoulder(-1); shoulder(1);
 
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.055, 8), skin);
     neck.position.y = 0.61;
     g.add(neck);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.125, 16, 12), skin);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.128, 20, 14), skin);
     head.position.y = 0.71;
+    head.scale.set(0.92, 1.05, 0.90);
     g.add(head);
 
-    const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.132, 16, 9, 0, Math.PI * 2, 0, Math.PI * 0.62), hair);
-    hairCap.position.set(0, 0.754, 0.012);
+    const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.137, 20, 10, 0, Math.PI * 2, 0, Math.PI * 0.64), hair);
+    hairCap.position.set(0, 0.758, 0.012);
+    hairCap.scale.set(1.04, 0.94, 1.00);
     g.add(hairCap);
-    const fringe = new THREE.Mesh(new THREE.ConeGeometry(0.042, 0.14, 7), hair);
-    fringe.position.set(0, 0.715, -0.112);
-    fringe.rotation.x = -0.95;
-    g.add(fringe);
+    [-0.045, 0, 0.045].forEach((x, i) => {
+      const bang = new THREE.Mesh(new THREE.ConeGeometry(0.025 + (i === 1 ? 0.008 : 0), 0.14, 7), i === 1 ? hairD : hair);
+      bang.position.set(x, 0.718, -0.112);
+      bang.rotation.x = -0.98;
+      bang.rotation.z = x * 2.8;
+      g.add(bang);
+    });
+    function makeSideLock(side) {
+      const lock = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.17, 7), hairD);
+      lock.position.set(side * 0.095, 0.67, -0.045);
+      lock.rotation.z = side * 0.42;
+      lock.rotation.x = -0.35;
+      g.add(lock);
+    }
+    makeSideLock(-1); makeSideLock(1);
 
     function makeTwinTail(side) {
       const tail = new THREE.Group();
-      const base = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.20, 8), hair);
-      base.rotation.z = side * 0.36;
-      base.position.set(side * 0.105, 0.65, 0.02);
+      const base = new THREE.Mesh(new THREE.ConeGeometry(0.050, 0.22, 9), hair);
+      base.rotation.z = side * 0.48;
+      base.rotation.x = 0.10;
+      base.position.set(side * 0.115, 0.64, 0.025);
       tail.add(base);
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.027, 0.18, 7), hairD);
-      tip.rotation.z = side * 0.62;
-      tip.position.set(side * 0.145, 0.53, 0.025);
+      const mid = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.18, 8), hair);
+      mid.rotation.z = side * 0.72;
+      mid.position.set(side * 0.16, 0.53, 0.035);
+      tail.add(mid);
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.14, 7), hairD);
+      tip.rotation.z = side * 0.95;
+      tip.position.set(side * 0.19, 0.43, 0.04);
       tail.add(tip);
-      const clip = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.028, 0.035), yellow);
-      clip.position.set(side * 0.09, 0.69, -0.015);
+      const clip = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.034, 0.038), yellow);
+      clip.position.set(side * 0.092, 0.69, -0.018);
       tail.add(clip);
       return tail;
     }
     g.add(makeTwinTail(-1));
     g.add(makeTwinTail(1));
 
-    const leftEye = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.017, 0.011), blue);
-    leftEye.position.set(-0.043, 0.718, -0.116);
-    g.add(leftEye);
-    const rightEye = leftEye.clone();
-    rightEye.position.x = 0.043;
-    g.add(rightEye);
-    const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.046, 0.008, 0.01), redD);
-    mouth.position.set(0, 0.675, -0.123);
+    function makeEye(side) {
+      const eye = new THREE.Group();
+      const sclera = new THREE.Mesh(new THREE.BoxGeometry(0.040, 0.022, 0.010), white);
+      sclera.position.set(side * 0.043, 0.720, -0.116);
+      eye.add(sclera);
+      const iris = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.020, 0.012), blue);
+      iris.position.set(side * 0.043, 0.720, -0.123);
+      eye.add(iris);
+      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.046, 0.009, 0.010), hairD);
+      brow.position.set(side * 0.043, 0.750, -0.112);
+      brow.rotation.z = side * -0.18;
+      eye.add(brow);
+      g.add(eye);
+    }
+    makeEye(-1); makeEye(1);
+    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.010, 0.018, 0.012), shadow);
+    nose.position.set(0, 0.700, -0.126);
+    g.add(nose);
+    const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.050, 0.008, 0.010), redD);
+    mouth.position.set(0, 0.672, -0.124);
+    mouth.rotation.z = -0.05;
     g.add(mouth);
 
     function makeArm(side) {
@@ -6069,8 +6116,11 @@
       const fore = new THREE.Mesh(new THREE.CylinderGeometry(0.021, 0.023, 0.15, 8), redD);
       fore.position.y = -0.18;
       arm.add(fore);
+      const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.046, 0.024, 0.04), black);
+      cuff.position.y = -0.235;
+      arm.add(cuff);
       const hand = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), skin);
-      hand.position.y = -0.265;
+      hand.position.y = -0.275;
       arm.add(hand);
       return arm;
     }
@@ -6084,8 +6134,11 @@
       const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.032, 0.16, 8), red);
       thigh.position.y = -0.065;
       leg.add(thigh);
-      const boot = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.07, 0.105), black);
-      boot.position.set(0, -0.17, -0.018);
+      const knee = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.026, 0.052), redD);
+      knee.position.y = -0.135;
+      leg.add(knee);
+      const boot = new THREE.Mesh(new THREE.BoxGeometry(0.066, 0.074, 0.112), black);
+      boot.position.set(0, -0.19, -0.028);
       leg.add(boot);
       return leg;
     }
@@ -6121,6 +6174,10 @@
     const flag = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.105, 0.024), redD);
     flag.position.set(0.22, 0.88, -0.02);
     g.add(flag);
+    const nerveBadge = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.032, 0.026), yellow);
+    nerveBadge.position.set(-0.052, 0.475, -0.142);
+    nerveBadge.rotation.z = Math.PI / 4;
+    g.add(nerveBadge);
 
     g.scale.setScalar(0.75);
     castReceive(g);
