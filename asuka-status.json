@@ -1,13 +1,13 @@
 {
-  "activity": "在指挥塔复盘系统日志",
-  "room": "Command tower",
-  "mood": "专注，但对低级错误零容忍",
-  "x": 4,
-  "z": 2,
-  "pose": "command",
-  "line": "如果系统乱了，我先把边界画清楚。控制住，别瞎冲。",
+  "activity": "在训练院做同步率训练",
+  "room": "Training yard",
+  "mood": "斗志很高，当然本来就该这样",
+  "x": 3,
+  "z": 5,
+  "pose": "train",
+  "line": "结果说话。漂亮的计划不落地就是装饰品。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-15T11:50:20+08:00",
-  "updatedAtUTC": "2026-05-15T03:50:20+00:00",
-  "slot": 5929390
+  "updatedAt": "2026-05-15T11:55:24+08:00",
+  "updatedAtUTC": "2026-05-15T03:55:24+00:00",
+  "slot": 5929391
 }
