@@ -1,4 +1,15 @@
 {
   "v": 1,
-  "cells": []
+  "cells": [
+    {
+      "x": 7,
+      "z": 2,
+      "terrain": "grass",
+      "kind": "rock",
+      "floors": 2,
+      "label": "Unit-02 零件堆",
+      "hourKey": "2026-05-16T07",
+      "addedAt": "2026-05-16T07:00:19+08:00"
+    }
+  ]
 }
