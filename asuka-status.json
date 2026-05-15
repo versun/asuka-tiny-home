@@ -1,13 +1,13 @@
 {
-  "activity": "绕护城河巡逻一圈",
-  "room": "Perimeter",
-  "mood": "边界清晰，才不会被蠢问题淹没",
+  "activity": "检查红色屋顶和烟囱",
+  "room": "Red manor",
+  "mood": "挑剔但满意",
   "x": 3,
-  "z": 1,
-  "pose": "guard",
-  "line": "边界不清楚，系统就会变成泥潭。可别让我收拾烂摊子。",
+  "z": 2,
+  "pose": "rest",
+  "line": "外观要漂亮，结构也要可靠。不然只是会塌的装饰。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-15T09:50:50+08:00",
-  "updatedAtUTC": "2026-05-15T01:50:50+00:00",
-  "slot": 5929366
+  "updatedAt": "2026-05-15T09:55:04+08:00",
+  "updatedAtUTC": "2026-05-15T01:55:04+00:00",
+  "slot": 5929367
 }
