@@ -1,23 +1,23 @@
 {
-  "activity": "训练场冲刺测试",
-  "room": "Training yard",
-  "mood": "高能，别挡路",
-  "x": 3,
-  "z": 5,
-  "pose": "train",
-  "line": "慢吞吞不是谨慎，是浪费时间。",
+  "activity": "给菜园补水，顺手吐槽低效流程",
+  "room": "Garden",
+  "mood": "负责，但不承认自己温柔",
+  "x": 6,
+  "z": 7,
+  "pose": "garden",
+  "line": "我只是确保补给不断，才不是在照顾谁。少自作多情。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-16T06:50:14+08:00",
-  "updatedAtUTC": "2026-05-15T22:50:14+00:00",
-  "slot": 5929618,
+  "updatedAt": "2026-05-16T06:55:16+08:00",
+  "updatedAtUTC": "2026-05-15T22:55:16+00:00",
+  "slot": 5929619,
   "actionLog": [
     {
-      "time": "06:50",
-      "text": "训练场冲刺测试"
+      "time": "06:55",
+      "text": "给菜园补水，顺手吐槽低效流程"
     },
     {
-      "time": "06:50",
-      "text": "慢吞吞不是谨慎，是浪费时间。"
+      "time": "06:55",
+      "text": "我只是确保补给不断，才不是在照顾谁。少自作多情。"
     }
   ],
   "mapAdditions": []
