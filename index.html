@@ -168,6 +168,64 @@
     line-height: 1.45;
     color: #6d5746;
   }
+
+  .asuka-command-grid {
+    margin-top: 11px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+  }
+  .asuka-command-cell {
+    border: 1px solid rgba(194, 47, 38, 0.20);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255,248,232,0.82), rgba(255,239,220,0.62));
+    padding: 7px 6px 6px;
+    min-width: 0;
+  }
+  .asuka-command-label {
+    display: block;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: #a93a30;
+    opacity: 0.86;
+  }
+  .asuka-command-value {
+    display: block;
+    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 900;
+    color: #2a2722;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .asuka-feature-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 118px;
+    z-index: 32;
+    max-width: min(520px, calc(100vw - 40px));
+    transform: translateX(-50%) translateY(10px);
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(194, 47, 38, 0.32);
+    background: rgba(255, 252, 245, 0.94);
+    color: #3a3028;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 18px 48px -28px rgba(71, 22, 17, 0.55), 0 1px 0 rgba(255,255,255,0.75) inset;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    backdrop-filter: blur(8px) saturate(1.08);
+    -webkit-backdrop-filter: blur(8px) saturate(1.08);
+  }
+  .asuka-feature-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
   @media (max-width: 760px) {
     .asuka-status-panel { top: auto; bottom: 166px; left: 12px; width: calc(100vw - 24px); }
   }
@@ -1090,8 +1148,14 @@
       <span id="asuka-status-updated">waiting</span>
     </div>
     <p id="asuka-status-line" class="asuka-status-line">Don't just stare. Observe properly.</p>
+    <div class="asuka-command-grid" aria-label="Asuka command readout">
+      <div class="asuka-command-cell"><span class="asuka-command-label">Sync</span><span id="asuka-sync-rate" class="asuka-command-value">--%</span></div>
+      <div class="asuka-command-cell"><span class="asuka-command-label">Command</span><span id="asuka-current-command" class="asuka-command-value">Stand by</span></div>
+      <div class="asuka-command-cell"><span class="asuka-command-label">Alert</span><span id="asuka-alert-level" class="asuka-command-value">Green</span></div>
+    </div>
     <div class="asuka-lock-badge" title="Read-only public view. World changes are made by Asuka's local updater.">🔒 Sealed world · Asuka-controlled</div>
   </aside>
+  <div id="asuka-feature-toast" class="asuka-feature-toast" role="status" aria-live="polite"></div>
 
   <div class="unsaved-banner" id="unsaved-banner" hidden>
     <span class="dot" aria-hidden="true"></span>
@@ -2121,6 +2185,19 @@
 
     cloud:     new THREE.MeshLambertMaterial({ color: 0xfdfcf8 }),
     cloudShade:new THREE.MeshLambertMaterial({ color: 0xdcd9d0 }),
+
+    evaRed:    new THREE.MeshLambertMaterial({ color: 0xd42022 }),
+    evaRedD:   new THREE.MeshLambertMaterial({ color: 0x761014 }),
+    evaBlack:  new THREE.MeshLambertMaterial({ color: 0x242126 }),
+    evaSteel:  new THREE.MeshLambertMaterial({ color: 0x7e8790 }),
+    evaSteelD: new THREE.MeshLambertMaterial({ color: 0x444b55 }),
+    evaOrange: new THREE.MeshLambertMaterial({ color: 0xff8a1d }),
+    evaGlow:   new THREE.MeshBasicMaterial({ color: 0xff362e, transparent: true, opacity: 0.72 }),
+    roomWarm:  new THREE.MeshBasicMaterial({ color: 0xffbd68, transparent: true, opacity: 0.46, depthWrite: false }),
+    roomRed:   new THREE.MeshBasicMaterial({ color: 0xff2e2a, transparent: true, opacity: 0.50, depthWrite: false }),
+    roomBlue:  new THREE.MeshBasicMaterial({ color: 0x4fc6ff, transparent: true, opacity: 0.46, depthWrite: false }),
+    roomGreen: new THREE.MeshBasicMaterial({ color: 0x7cff77, transparent: true, opacity: 0.38, depthWrite: false }),
+    highlight: new THREE.MeshBasicMaterial({ color: 0xfff2b8, transparent: true, opacity: 0.34, depthWrite: false }),
 
     hover:     new THREE.MeshBasicMaterial({ color: 0x2a2722, transparent: true, opacity: 0.18, depthWrite: false }),
     hoverErase:new THREE.MeshBasicMaterial({ color: 0xb84838, transparent: true, opacity: 0.28, depthWrite: false }),
@@ -5810,10 +5887,26 @@
   const ASUKA_PATROLS = {
     command: [[4.25, 2.00], [4.72, 2.00], [5.00, 2.42], [5.00, 3.05], [4.58, 3.08]],
     train: [[2.18, 5.00], [2.92, 5.00], [3.55, 5.35], [4.10, 5.00], [3.22, 4.72]],
+    coffee: [[6.05, 6.05], [6.38, 6.10], [6.56, 6.42], [6.22, 6.58]],
     garden: [[6.00, 5.92], [6.00, 6.48], [6.28, 6.95], [6.62, 6.55], [6.42, 5.92]],
     guard: [[3.00, 1.00], [2.42, 1.00], [1.88, 1.32], [1.18, 2.10], [1.00, 3.18], [1.42, 4.35], [2.25, 5.00], [3.00, 5.00]],
     rest: [[2.38, 2.02], [2.86, 2.00], [3.30, 2.08], [3.00, 2.42], [2.55, 2.36]],
     think: [[1.00, 1.00], [1.42, 1.08], [1.72, 1.48], [1.28, 1.88], [1.00, 1.52]],
+    repair: [[6.62, 2.10], [6.92, 2.44], [6.62, 2.78], [6.28, 2.44]],
+  };
+  const ASUKA_POSE_LABELS = {
+    command: '复盘战术图', train: '训练', coffee: '喝咖啡', garden: '巡查花圃', guard: '巡逻', rest: '发呆恢复', think: '盯着天空想赢法', repair: '修 Unit-02'
+  };
+  const ASUKA_ROOM_BY_POSE = { command: 'Command tower', train: 'Training yard', coffee: 'Coffee corner', garden: 'Garden deck', guard: 'Outer patrol', rest: 'Bedroom warm zone', think: 'Observation edge', repair: 'EVA-02 hangar' };
+  const ASUKA_STATUS_LINES = {
+    command: '战术地图亮着。别挡光，我在赢。',
+    train: '训练场红灯开了。跟不上就靠边站。',
+    coffee: '咖啡是补给，不是偷懒。懂？',
+    garden: '巡查不是散步，是确认边界还听话。',
+    guard: '警戒线干净。谁乱进来谁倒霉。',
+    rest: '我在发呆，不代表我没看到你的低级错误。',
+    think: '安静点。天才的大脑正在重排世界。',
+    repair: 'Unit-02 要保养。优秀不是凭空来的。'
   };
   const ASUKA_STATUS_FALLBACK = {
     agent: 'Asuka Langley Soryu',
@@ -5823,6 +5916,10 @@
     x: 4,
     z: 3,
     pose: 'command',
+    syncRate: 92,
+    currentCommand: 'SYNC TEST',
+    alertLevel: 'AMBER',
+    weather: 'morning-fog',
     line: '家不是逃跑用的，是补给、训练、继续赢的基地。',
     updatedAt: 'local fallback',
   };
@@ -5977,6 +6074,7 @@
         ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : raw;
     }
+    if (typeof updateAsukaCommandReadouts === 'function') updateAsukaCommandReadouts(status);
   }
 
   function applyAsukaStatus(status) {
@@ -5986,6 +6084,9 @@
       z: Math.max(0, Math.min(GRID - 1, Math.round(asukaStatus.z || 3))),
     };
     ensureAsukaAvatar();
+    if (typeof buildAsukaFeatureLayer === 'function') buildAsukaFeatureLayer();
+    if (typeof focusAsukaRoom === 'function') focusAsukaRoom(asukaStatus.pose || 'command');
+    if (typeof applyAsukaAtmosphere === 'function') applyAsukaAtmosphere(asukaStatus);
     updateAsukaPanel(asukaStatus);
   }
 
@@ -6012,8 +6113,17 @@
     asukaAvatar.position.y = p.y + Math.sin(t * 7.4) * (dist > 0.006 ? 0.026 : 0.012);
     if (dist > 0.002) asukaAvatar.rotation.y = Math.atan2(dx, dz);
     const pose = asukaStatus.pose || 'command';
-    const lean = pose === 'train' ? 0.14 : (pose === 'guard' ? -0.08 : (pose === 'garden' ? 0.06 : 0.035));
-    asukaAvatar.rotation.z = Math.sin(t * (pose === 'train' ? 5.8 : 3.2)) * lean;
+    const lean = pose === 'train' ? 0.16 : (pose === 'repair' ? 0.12 : (pose === 'guard' ? -0.08 : (pose === 'garden' || pose === 'coffee' ? 0.06 : 0.035)));
+    asukaAvatar.rotation.z = Math.sin(t * (pose === 'train' ? 7.8 : pose === 'repair' ? 4.8 : 3.2)) * lean;
+    const leftArm = asukaAvatar.children[8];
+    const rightArm = asukaAvatar.children[9];
+    if (leftArm && rightArm) {
+      if (pose === 'train') { leftArm.rotation.z = -0.85 + Math.sin(t * 9) * 0.22; rightArm.rotation.z = 0.85 + Math.cos(t * 9) * 0.22; }
+      else if (pose === 'coffee') { leftArm.rotation.z = -0.20; rightArm.rotation.z = -0.92 + Math.sin(t * 2.5) * 0.06; }
+      else if (pose === 'repair') { leftArm.rotation.z = -0.72 + Math.sin(t * 7) * 0.16; rightArm.rotation.z = 0.18 + Math.cos(t * 6) * 0.14; }
+      else if (pose === 'guard') { leftArm.rotation.z = -0.18; rightArm.rotation.z = 0.72; }
+      else { leftArm.rotation.z = -0.35; rightArm.rotation.z = 0.35; }
+    }
     const marker = asukaAvatar.children.find(ch => ch.userData && ch.userData.asukaMarker);
     if (marker) {
       marker.rotation.z = t * 1.7;
@@ -6032,6 +6142,337 @@
       target.z += (asukaAvatar.position.z - target.z) * Math.min(1, dt * 0.55);
       updateCamera();
     }
+  }
+
+
+  // -------- Asuka live base features --------
+  // Not decoration spam: these are readable state surfaces. Lights show room state,
+  // the hangar anchors the EVA theme, and every click closes the loop with a line.
+  const asukaFeatureGroup = new THREE.Group();
+  asukaFeatureGroup.name = 'asuka-live-base-features';
+  worldGroup.add(asukaFeatureGroup);
+  const asukaInteractables = [];
+  const asukaRoomLights = [];
+  let asukaHighlight = null;
+  let asukaWeatherMode = 'morning-fog';
+  let asukaToastTimer = 0;
+
+  function asukaTilePoint(x, z, y = TOP_H + 0.035) {
+    const p = tilePos(x, z);
+    return new THREE.Vector3(p.x, y, p.z);
+  }
+  function registerAsukaInteractable(root, id, line, room, focus) {
+    root.userData.asukaFeature = { id, line, room, focus };
+    root.traverse(o => { o.userData.asukaFeatureRoot = root; });
+    asukaInteractables.push(root);
+    return root;
+  }
+  function makeCanvasLabel(text, opts) {
+    opts = opts || {};
+    const canvas = document.createElement('canvas');
+    canvas.width = opts.w || 512;
+    canvas.height = opts.h || 128;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = opts.bg || 'rgba(42, 33, 31, 0.88)';
+    ctx.strokeStyle = opts.stroke || 'rgba(255, 62, 52, 0.92)';
+    ctx.lineWidth = 8;
+    const r = 18;
+    ctx.beginPath();
+    ctx.moveTo(r, 4); ctx.lineTo(canvas.width-r, 4); ctx.quadraticCurveTo(canvas.width-4, 4, canvas.width-4, r);
+    ctx.lineTo(canvas.width-4, canvas.height-r); ctx.quadraticCurveTo(canvas.width-4, canvas.height-4, canvas.width-r, canvas.height-4);
+    ctx.lineTo(r, canvas.height-4); ctx.quadraticCurveTo(4, canvas.height-4, 4, canvas.height-r);
+    ctx.lineTo(4, r); ctx.quadraticCurveTo(4, 4, r, 4); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = opts.color || '#fff4e5';
+    ctx.font = opts.font || '800 42px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lines = Array.isArray(text) ? text : String(text).split('\n');
+    lines.forEach((line, i) => ctx.fillText(line, canvas.width/2, canvas.height/2 + (i - (lines.length-1)/2) * 42));
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+  function makeLabelSprite(text, scale, opts) {
+    const mat = new THREE.SpriteMaterial({ map: makeCanvasLabel(text, opts), transparent: true });
+    const sp = new THREE.Sprite(mat);
+    sp.scale.set(scale[0], scale[1], 1);
+    return sp;
+  }
+  function makeRoomLight(id, x, z, color, baseOpacity, room, line) {
+    const g = new THREE.Group();
+    const p = asukaTilePoint(x, z, TOP_H + 0.052);
+    g.position.copy(p);
+    const mat = (color === 'red') ? M.roomRed.clone() : (color === 'blue') ? M.roomBlue.clone() : (color === 'green') ? M.roomGreen.clone() : M.roomWarm.clone();
+    mat.opacity = baseOpacity || mat.opacity;
+    const plate = new THREE.Mesh(new THREE.CircleGeometry(0.46, 36), mat);
+    plate.rotation.x = -Math.PI / 2;
+    plate.position.y = 0.006;
+    plate.userData.asukaLightPlate = true;
+    g.add(plate);
+    const bulb = new THREE.PointLight(color === 'red' ? 0xff3028 : color === 'blue' ? 0x62cfff : color === 'green' ? 0x8cff7a : 0xffb86a, 0.35, 2.2);
+    bulb.position.y = 0.72;
+    g.add(bulb);
+    g.userData.asukaRoomLight = { id, mat, bulb, baseOpacity: mat.opacity, active: false };
+    asukaRoomLights.push(g);
+    asukaFeatureGroup.add(registerAsukaInteractable(g, id, line, room, [x, z]));
+    return g;
+  }
+  function makeMiniEva02() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(6.75, 2.35, TOP_H + 0.06));
+    g.rotation.y = -0.35;
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.70, 0.18), M.evaRed); torso.position.y = 0.75; g.add(torso);
+    const chest = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.14, 0.20), M.evaBlack); chest.position.set(0, 0.92, -0.03); g.add(chest);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.19, 0.16), M.evaOrange); head.position.y = 1.20; g.add(head);
+    const horn = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.22, 5), M.evaRedD); horn.position.set(0, 1.38, -0.03); horn.rotation.x = -0.45; g.add(horn);
+    for (const side of [-1, 1]) {
+      const shoulder = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.38, 0.14), M.evaRedD); shoulder.position.set(side * 0.25, 0.98, 0); shoulder.rotation.z = side * 0.22; g.add(shoulder);
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.50, 0.10), M.evaRed); arm.position.set(side * 0.31, 0.61, 0.02); arm.rotation.z = side * 0.10; g.add(arm);
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.60, 0.12), M.evaRedD); leg.position.set(side * 0.10, 0.22, 0); g.add(leg);
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.35, 0.05), M.evaSteelD); rail.position.set(side * 0.48, 0.70, 0.22); g.add(rail);
+    }
+    const eye = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.035, 0.012), M.evaGlow); eye.position.set(0, 1.22, -0.086); g.add(eye);
+    g.scale.setScalar(1.22);
+    castReceive(g);
+    return registerAsukaInteractable(g, 'eva-hangar', 'Unit-02 机库在线。谁敢碰坏它，我就让谁写一周事故报告。', 'EVA-02 hangar', [6.7, 2.35]);
+  }
+  function makeHangar() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(6.75, 2.35, TOP_H + 0.02));
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.08, 1.10), M.evaSteelD); deck.position.y = 0.02; g.add(deck);
+    for (const x of [-0.54, 0.54]) {
+      for (const z of [-0.42, 0.42]) {
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.055, 1.62, 0.055), M.evaSteel); post.position.set(x, 0.82, z); g.add(post);
+      }
+    }
+    for (const z of [-0.42, 0.42]) {
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(1.23, 0.06, 0.06), M.evaSteel); beam.position.set(0, 1.58, z); g.add(beam);
+    }
+    const sign = makeLabelSprite('EVA-02\nHANGAR', [0.72, 0.24], { w: 512, h: 160, font: '900 42px ui-sans-serif, system-ui', bg: 'rgba(28,24,26,0.92)', stroke: 'rgba(255,51,42,0.95)' });
+    sign.position.set(0, 1.85, -0.52); g.add(sign);
+    const eva = makeMiniEva02();
+    eva.position.set(0, 0.08, 0.02);
+    g.add(eva);
+    castReceive(g);
+    return registerAsukaInteractable(g, 'eva-hangar', 'EVA-02 在架上。领地感？这叫最低配置。', 'EVA-02 hangar', [6.75, 2.35]);
+  }
+  function makeCommandDeck() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(4.65, 2.05, TOP_H + 0.18));
+    const map = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.06, 0.52), M.evaBlack); map.position.y = 0.22; g.add(map);
+    for (let i = 0; i < 5; i++) {
+      const line = new THREE.Mesh(new THREE.BoxGeometry(0.08 + i * 0.05, 0.012, 0.018), i % 2 ? M.roomBlue : M.evaGlow);
+      line.position.set(-0.25 + i * 0.12, 0.265, -0.15 + (i % 3) * 0.14); g.add(line);
+    }
+    const screen = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.44, 0.045), M.evaBlack); screen.position.set(0.05, 0.62, -0.26); screen.rotation.x = -0.14; g.add(screen);
+    for (const x of [-0.18, 0.02, 0.22]) { const blip = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.045, 0.012), M.roomBlue); blip.position.set(x, 0.64 + Math.abs(x)*0.25, -0.287); g.add(blip); }
+    castReceive(g);
+    return registerAsukaInteractable(g, 'command-deck', '战术地图已亮。终于有点像能用的指挥室了。', 'Command tower', [4.65, 2.05]);
+  }
+  function makeSyncGauge() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(5.45, 2.62, TOP_H + 0.14));
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.34, 0.08, 24), M.evaBlack); base.rotation.x = Math.PI / 2; base.position.y = 0.30; g.add(base);
+    for (let i = 0; i < 12; i++) {
+      const tick = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.12, 0.018), i < 9 ? M.roomGreen : M.evaGlow);
+      const a = -Math.PI * 0.75 + i * (Math.PI * 1.5 / 11);
+      tick.position.set(Math.cos(a) * 0.31, 0.34 + Math.sin(a) * 0.31, -0.04);
+      tick.rotation.z = a + Math.PI / 2;
+      g.add(tick);
+    }
+    const label = makeLabelSprite('SYNC', [0.44, 0.12], { w: 360, h: 100, font: '900 38px ui-monospace, Menlo, monospace', bg: 'rgba(20,24,24,0.90)', stroke: 'rgba(124,255,119,0.70)' });
+    label.position.set(0, 0.08, -0.20); g.add(label);
+    castReceive(g);
+    return registerAsukaInteractable(g, 'sync-gauge', '今日同步率在线。低于 90% 我会亲自嫌弃。', 'Sync dashboard', [5.45, 2.62]);
+  }
+  function makeEntranceSign() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(3.0, 0.78, TOP_H + 0.10));
+    for (const x of [-0.38, 0.38]) { const post = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.48, 0.05), M.woodTrim); post.position.set(x, 0.24, 0); g.add(post); }
+    const sign = makeLabelSprite('GENIUS RESIDENT ONLY', [1.30, 0.28], { w: 900, h: 170, font: '900 50px ui-sans-serif, system-ui', bg: 'rgba(44,31,28,0.92)', stroke: 'rgba(255,210,70,0.88)', color: '#fff0cf' });
+    sign.position.set(0, 0.70, -0.04); g.add(sign);
+    return registerAsukaInteractable(g, 'genius-sign', '看清楚牌子：GENIUS RESIDENT ONLY。不是装饰，是筛选机制。', 'Front gate', [3, 0.9]);
+  }
+  function makeCoffeeCorner() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(6.25, 6.25, TOP_H + 0.05));
+    const table = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.06, 18), M.woodTrim); table.position.y = 0.20; g.add(table);
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.09, 12), M.wallCream); cup.position.set(0.05, 0.285, -0.02); g.add(cup);
+    const steamMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.52, depthWrite: false });
+    for (const x of [-0.04, 0.02, 0.08]) { const s = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.006, 6, 16), steamMat); s.position.set(x, 0.40 + Math.random()*0.08, -0.02); s.rotation.x = Math.PI / 2; s.userData.asukaSteam = true; g.add(s); }
+    return registerAsukaInteractable(g, 'coffee-corner', '咖啡角合格。现在别用“休息”当借口偷懒。', 'Coffee corner', [6.25, 6.25]);
+  }
+  function makeTrainingMarkers() {
+    const g = new THREE.Group();
+    g.position.copy(asukaTilePoint(3.2, 5.25, TOP_H + 0.045));
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff2e2a, transparent: true, opacity: 0.46, depthWrite: false });
+    for (const r of [0.22, 0.39, 0.56]) { const tor = new THREE.Mesh(new THREE.TorusGeometry(r, 0.014, 6, 36), ringMat); tor.rotation.x = Math.PI / 2; g.add(tor); }
+    const dummy = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.46, 0.10), M.evaSteel); dummy.position.set(0.34, 0.25, -0.20); g.add(dummy);
+    return registerAsukaInteractable(g, 'training-yard', '训练场红灯启动。你最好别拖后腿。', 'Training yard', [3.2, 5.25]);
+  }
+  function makeWeather() {
+    const g = new THREE.Group();
+    g.name = 'asuka-weather';
+    const fogMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.10, depthWrite: false });
+    for (let i = 0; i < 9; i++) {
+      const fog = new THREE.Mesh(new THREE.BoxGeometry(1.6 + (i % 3) * 0.35, 0.025, 0.18), fogMat.clone());
+      fog.position.set(-3.2 + (i % 3) * 3.2, 0.36 + (i % 2) * 0.08, -3.8 + Math.floor(i / 3) * 2.6);
+      fog.userData.asukaFog = true;
+      g.add(fog);
+    }
+    const rainMat = new THREE.MeshBasicMaterial({ color: 0x8fd8ff, transparent: true, opacity: 0.0, depthWrite: false });
+    for (let i = 0; i < 28; i++) {
+      const drop = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.34, 0.018), rainMat.clone());
+      drop.position.set(-4 + Math.random()*8, 2.0 + Math.random()*2.0, -4 + Math.random()*8);
+      drop.rotation.z = -0.18;
+      drop.userData.asukaRain = true;
+      g.add(drop);
+    }
+    asukaFeatureGroup.add(g);
+    return g;
+  }
+  const asukaWeather = makeWeather();
+
+  function buildAsukaFeatureLayer() {
+    if (asukaFeatureGroup.userData.built) return;
+    asukaFeatureGroup.userData.built = true;
+    asukaFeatureGroup.add(makeHangar());
+    asukaFeatureGroup.add(makeCommandDeck());
+    asukaFeatureGroup.add(makeSyncGauge());
+    asukaFeatureGroup.add(makeEntranceSign());
+    asukaFeatureGroup.add(makeCoffeeCorner());
+    asukaFeatureGroup.add(makeTrainingMarkers());
+    makeRoomLight('command', 4.65, 2.08, 'blue', 0.38, 'Command tower', '指挥室屏幕闪烁。终于不是空房子了。');
+    makeRoomLight('train', 3.2, 5.2, 'red', 0.42, 'Training yard', '训练院红灯：启动。别眨眼。');
+    makeRoomLight('rest', 2.75, 2.15, 'warm', 0.36, 'Bedroom warm zone', '卧室暖灯只是补给站，不是撤退。');
+    makeRoomLight('repair', 6.75, 2.35, 'red', 0.34, 'EVA-02 hangar', '维修架通电。Unit-02 要比所有人可靠。');
+    makeRoomLight('coffee', 6.25, 6.25, 'warm', 0.34, 'Coffee corner', '咖啡因上线。效率别掉。');
+    makeRoomLight('guard', 1.2, 3.2, 'green', 0.28, 'Outer patrol', '警戒线清晰。很好，至少这个不蠢。');
+    buildAsukaHighlight();
+    castReceive(asukaFeatureGroup);
+  }
+  function buildAsukaHighlight() {
+    if (asukaHighlight) return asukaHighlight;
+    asukaHighlight = new THREE.Mesh(new THREE.RingGeometry(0.44, 0.58, 36), M.highlight.clone());
+    asukaHighlight.rotation.x = -Math.PI / 2;
+    asukaHighlight.position.y = TOP_H + 0.09;
+    asukaHighlight.visible = false;
+    asukaHighlight.userData.asukaHighlight = true;
+    asukaFeatureGroup.add(asukaHighlight);
+    return asukaHighlight;
+  }
+  function showAsukaToast(text) {
+    const el = document.getElementById('asuka-feature-toast');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add('visible');
+    clearTimeout(asukaToastTimer);
+    asukaToastTimer = setTimeout(() => el.classList.remove('visible'), 2600);
+  }
+  function focusAsukaRoom(roomOrPose, focus) {
+    const pose = ASUKA_ROOM_BY_POSE[roomOrPose] ? roomOrPose : Object.keys(ASUKA_ROOM_BY_POSE).find(k => ASUKA_ROOM_BY_POSE[k] === roomOrPose);
+    asukaRoomLights.forEach(light => {
+      const data = light.userData.asukaRoomLight;
+      const isActive = data && (data.id === pose || data.id === roomOrPose);
+      data.active = !!isActive;
+      if (data.mat) data.mat.opacity = data.baseOpacity * (isActive ? 1.65 : 0.65);
+      if (data.bulb) data.bulb.intensity = isActive ? 0.78 : 0.24;
+    });
+    const point = focus || ((ASUKA_PATROLS[pose] && ASUKA_PATROLS[pose][0]) || [asukaTarget.x, asukaTarget.z]);
+    if (asukaHighlight && point) {
+      const p = asukaTilePoint(point[0], point[1], TOP_H + 0.11);
+      asukaHighlight.position.x = p.x;
+      asukaHighlight.position.z = p.z;
+      asukaHighlight.visible = true;
+    }
+  }
+  function updateAsukaCommandReadouts(status) {
+    const pose = status.pose || 'command';
+    const sync = document.getElementById('asuka-sync-rate');
+    const command = document.getElementById('asuka-current-command');
+    const alert = document.getElementById('asuka-alert-level');
+    const rate = Number.isFinite(+status.syncRate) ? Math.round(+status.syncRate) : (88 + ((Date.now() / 60000) % 9 | 0));
+    if (sync) sync.textContent = rate + '%';
+    if (command) command.textContent = status.currentCommand || ASUKA_POSE_LABELS[pose] || 'Stand by';
+    if (alert) alert.textContent = status.alertLevel || (pose === 'guard' ? 'AMBER' : 'GREEN');
+  }
+  function applyAsukaAtmosphere(status) {
+    const pose = status.pose || 'command';
+    const weather = status.weather || (pose === 'rest' ? 'night' : pose === 'coffee' ? 'morning-fog' : pose === 'repair' ? 'rain' : 'clear');
+    asukaWeatherMode = weather;
+    if (weather === 'night') {
+      scene.background.set(0x181b2b);
+      hemi.color.set(0x9fb8ff); hemi.groundColor.set(0x302a3a); hemi.intensity = 0.20;
+      sun.color.set(0x9fc3ff); sun.intensity = 0.38;
+    } else if (weather === 'rain') {
+      scene.background.set(0x8fa8b8);
+      hemi.color.set(0xb8d8ff); hemi.groundColor.set(0x56606a); hemi.intensity = 0.28;
+      sun.color.set(0xd8e8ff); sun.intensity = 0.52;
+    } else if (weather === 'morning-fog') {
+      scene.background.set(0xf5eadf);
+      hemi.color.set(0xfff2df); hemi.groundColor.set(0xb39879); hemi.intensity = 0.30;
+      sun.color.set(0xfff0dc); sun.intensity = 0.68;
+    } else {
+      scene.background.set(0xf4ede0);
+      sun.color.set(0xffffff);
+      applyLightingSettings();
+    }
+  }
+  function pickAsukaFeature(clientX, clientY) {
+    if (!asukaInteractables.length) return null;
+    ndc.x = (clientX / window.innerWidth) * 2 - 1;
+    ndc.y = -(clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(ndc, camera);
+    const hits = raycaster.intersectObjects(asukaInteractables, true);
+    for (const h of hits) {
+      let n = h.object;
+      while (n && !(n.userData && n.userData.asukaFeature)) {
+        if (n.userData && n.userData.asukaFeatureRoot) n = n.userData.asukaFeatureRoot;
+        else n = n.parent;
+      }
+      if (n && n.userData && n.userData.asukaFeature) return n;
+    }
+    return null;
+  }
+  function handleAsukaClick(clientX, clientY) {
+    const hit = pickAsukaFeature(clientX, clientY);
+    if (!hit) {
+      if (asukaAvatar) {
+        ndc.x = (clientX / window.innerWidth) * 2 - 1;
+        ndc.y = -(clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(ndc, camera);
+        const avatarHit = raycaster.intersectObject(asukaAvatar, true)[0];
+        if (avatarHit) {
+          const pose = asukaStatus.pose || 'command';
+          showAsukaToast(ASUKA_STATUS_LINES[pose] || asukaStatus.line || '别乱点。说你呢。');
+          focusAsukaRoom(pose);
+          return true;
+        }
+      }
+      return false;
+    }
+    const f = hit.userData.asukaFeature;
+    showAsukaToast(f.line || '点到了。观察力还行。');
+    focusAsukaRoom(f.room, f.focus);
+    if (Array.isArray(f.focus)) {
+      target.x += (asukaTilePoint(f.focus[0], f.focus[1]).x - target.x) * 0.55;
+      target.z += (asukaTilePoint(f.focus[0], f.focus[1]).z - target.z) * 0.55;
+      updateCamera();
+    }
+    return true;
+  }
+  function tickAsukaFeatures(t, dt) {
+    if (!asukaFeatureGroup.userData.built) return;
+    asukaFeatureGroup.traverse(o => {
+      if (!o.userData) return;
+      if (o.userData.asukaLightPlate && o.material) o.material.opacity = Math.max(0.08, o.material.opacity + Math.sin(t * 3.2 + o.id) * 0.002);
+      if (o.userData.asukaSteam) { o.position.y += dt * 0.10; o.scale.setScalar(1 + Math.sin(t * 2.4 + o.id) * 0.08); if (o.position.y > 0.60) o.position.y = 0.38; }
+      if (o.userData.asukaFog) { o.position.x += dt * 0.12; o.material.opacity = asukaWeatherMode === 'morning-fog' ? 0.10 + Math.sin(t * 0.8 + o.id) * 0.03 : 0.0; if (o.position.x > 5.2) o.position.x = -5.2; }
+      if (o.userData.asukaRain) { o.material.opacity = asukaWeatherMode === 'rain' ? 0.46 : 0.0; o.position.y -= dt * 4.6; o.position.x += dt * 0.55; if (o.position.y < 0.30) { o.position.y = 3.4; o.position.x = -4 + Math.random()*8; o.position.z = -4 + Math.random()*8; } }
+      if (o.userData.asukaHighlight && o.visible) { o.rotation.z = t * 1.4; o.material.opacity = 0.24 + (Math.sin(t * 4.2) + 1) * 0.08; }
+    });
   }
 
   // -------- hover indicator --------
@@ -6899,8 +7340,12 @@
       return;
     }
 
-    if (pointerDown && !didDrag && currentHover && dragMode !== 'pan') {
-      applyToolToCell(currentHover);
+    if (pointerDown && !didDrag && dragMode !== 'pan') {
+      if (typeof handleAsukaClick === 'function' && handleAsukaClick(e.clientX, e.clientY)) {
+        // Asuka feature consumed the tap. Good. No fake edit attempt.
+      } else if (currentHover) {
+        applyToolToCell(currentHover);
+      }
     }
     if (activePointers.size === 0) {
       pointerDown = null;
@@ -8024,6 +8469,7 @@
     }
     updateSmoke(dt);
     tickAsukaAvatar(t, dt);
+    if (typeof tickAsukaFeatures === 'function') tickAsukaFeatures(t, dt);
 
     renderScene();
   }
@@ -9656,6 +10102,7 @@
     if (!loadState()) loadInitialScene();
     resetCameraDefaults();
     ensureGhostBoardsAroundTarget();
+    if (typeof buildAsukaFeatureLayer === 'function') buildAsukaFeatureLayer();
     ensureAsukaAvatar();
     refreshAsukaStatus();
     setInterval(refreshAsukaStatus, 60000);
