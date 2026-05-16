@@ -6051,32 +6051,29 @@
       g.add(bang);
     });
     function makeSideLock(side) {
-      const lock = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.17, 7), hairD);
-      lock.position.set(side * 0.095, 0.67, -0.045);
-      lock.rotation.z = side * 0.42;
-      lock.rotation.x = -0.35;
+      const lock = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.13, 7), hairD);
+      lock.position.set(side * 0.086, 0.675, -0.04);
+      lock.rotation.z = side * 0.28;
+      lock.rotation.x = -0.25;
       g.add(lock);
     }
     makeSideLock(-1); makeSideLock(1);
 
     function makeTwinTail(side) {
+      // Keep the silhouette readable at tiny scale: one compact tail per side,
+      // not a cluster of insect legs. The yellow clip is the visual anchor.
       const tail = new THREE.Group();
-      const base = new THREE.Mesh(new THREE.ConeGeometry(0.050, 0.22, 9), hair);
-      base.rotation.z = side * 0.48;
-      base.rotation.x = 0.10;
-      base.position.set(side * 0.115, 0.64, 0.025);
-      tail.add(base);
-      const mid = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.18, 8), hair);
-      mid.rotation.z = side * 0.72;
-      mid.position.set(side * 0.16, 0.53, 0.035);
-      tail.add(mid);
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.14, 7), hairD);
-      tip.rotation.z = side * 0.95;
-      tip.position.set(side * 0.19, 0.43, 0.04);
-      tail.add(tip);
-      const clip = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.034, 0.038), yellow);
-      clip.position.set(side * 0.092, 0.69, -0.018);
-      tail.add(clip);
+      const tie = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.036, 0.04), yellow);
+      tie.position.set(side * 0.098, 0.690, -0.014);
+      tail.add(tie);
+      const tailRound = new THREE.Mesh(new THREE.SphereGeometry(0.052, 11, 8), hair);
+      tailRound.position.set(side * 0.142, 0.610, 0.030);
+      tailRound.scale.set(0.92, 1.18, 0.82);
+      tail.add(tailRound);
+      const tailTip = new THREE.Mesh(new THREE.SphereGeometry(0.038, 10, 7), hairD);
+      tailTip.position.set(side * 0.170, 0.535, 0.032);
+      tailTip.scale.set(0.86, 1.12, 0.80);
+      tail.add(tailTip);
       return tail;
     }
     g.add(makeTwinTail(-1));
@@ -6108,19 +6105,21 @@
     function makeArm(side) {
       const arm = new THREE.Group();
       arm.userData.asukaPart = side < 0 ? 'leftArm' : 'rightArm';
-      arm.position.set(side * 0.135, 0.43, -0.005);
-      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.027, 0.17, 8), red);
-      upper.position.y = -0.065;
-      upper.rotation.z = side * 0.12;
+      arm.position.set(side * 0.145, 0.455, -0.004);
+      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.027, 0.135, 8), red);
+      upper.position.y = -0.070;
+      upper.rotation.z = side * 0.10;
       arm.add(upper);
-      const fore = new THREE.Mesh(new THREE.CylinderGeometry(0.021, 0.023, 0.15, 8), redD);
-      fore.position.y = -0.18;
+      const fore = new THREE.Mesh(new THREE.CylinderGeometry(0.020, 0.023, 0.095, 8), redD);
+      fore.position.set(side * 0.010, -0.168, -0.012);
+      fore.rotation.z = side * -0.08;
       arm.add(fore);
-      const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.046, 0.024, 0.04), black);
-      cuff.position.y = -0.235;
+      const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.022, 0.042), black);
+      cuff.position.set(side * 0.012, -0.224, -0.020);
       arm.add(cuff);
-      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), skin);
-      hand.position.y = -0.275;
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.036, 11, 8), skin);
+      hand.position.set(side * 0.016, -0.260, -0.040);
+      hand.name = side < 0 ? 'leftHand' : 'rightHand';
       arm.add(hand);
       return arm;
     }
@@ -6327,11 +6326,11 @@
     const leftLeg = asukaAvatar.children.find(ch => ch.userData && ch.userData.asukaPart === 'leftLeg');
     const rightLeg = asukaAvatar.children.find(ch => ch.userData && ch.userData.asukaPart === 'rightLeg');
     if (leftArm && rightArm) {
-      if (pose === 'train') { leftArm.rotation.z = -0.85 + Math.sin(t * 9) * 0.22; rightArm.rotation.z = 0.85 + Math.cos(t * 9) * 0.22; }
-      else if (pose === 'coffee') { leftArm.rotation.z = -0.20; rightArm.rotation.z = -0.92 + Math.sin(t * 2.5) * 0.06; }
-      else if (pose === 'repair') { leftArm.rotation.z = -0.72 + Math.sin(t * 7) * 0.16; rightArm.rotation.z = 0.18 + Math.cos(t * 6) * 0.14; }
-      else if (pose === 'guard') { leftArm.rotation.z = -0.18; rightArm.rotation.z = 0.72; }
-      else { leftArm.rotation.z = -0.35; rightArm.rotation.z = 0.35; }
+      if (pose === 'train') { leftArm.rotation.z = -0.45 + Math.sin(t * 8) * 0.12; rightArm.rotation.z = 0.45 + Math.cos(t * 8) * 0.12; }
+      else if (pose === 'coffee') { leftArm.rotation.z = -0.18; rightArm.rotation.z = -0.55 + Math.sin(t * 2.5) * 0.04; }
+      else if (pose === 'repair') { leftArm.rotation.z = -0.42 + Math.sin(t * 6) * 0.10; rightArm.rotation.z = 0.26 + Math.cos(t * 5) * 0.09; }
+      else if (pose === 'guard') { leftArm.rotation.z = -0.12; rightArm.rotation.z = 0.46; }
+      else { leftArm.rotation.z = -0.24; rightArm.rotation.z = 0.24; }
     }
     if (leftLeg && rightLeg) {
       const stride = dist > 0.006 ? Math.sin(t * 10.5) * 0.22 : Math.sin(t * 2.5) * 0.04;
