@@ -10,6 +10,17 @@
       "label": "Unit-02 零件堆",
       "hourKey": "2026-05-16T07",
       "addedAt": "2026-05-16T07:00:19+08:00"
+    },
+    {
+      "x": 7,
+      "z": 4,
+      "terrain": "path",
+      "kind": "house",
+      "floors": 2,
+      "buildingType": "tower",
+      "label": "红色观测塔",
+      "hourKey": "2026-05-16T08",
+      "addedAt": "2026-05-16T08:00:04+08:00"
     }
   ]
 }
