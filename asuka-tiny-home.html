@@ -1188,6 +1188,10 @@
       <span id="asuka-status-updated">waiting</span>
     </div>
     <p id="asuka-status-line" class="asuka-status-line">Don't just stare. Observe properly.</p>
+    <div class="asuka-action-log" aria-label="Asuka action log">
+      <div class="asuka-action-log-title">Action log</div>
+      <ol id="asuka-action-log-list" class="asuka-action-log-list"></ol>
+    </div>
     <div class="asuka-command-grid" aria-label="Asuka command readout">
       <div class="asuka-command-cell"><span class="asuka-command-label">Sync</span><span id="asuka-sync-rate" class="asuka-command-value">--%</span></div>
       <div class="asuka-command-cell"><span class="asuka-command-label">Command</span><span id="asuka-current-command" class="asuka-command-value">Stand by</span></div>
@@ -10332,7 +10336,7 @@
     if (typeof buildAsukaFeatureLayer === 'function') buildAsukaFeatureLayer();
     ensureAsukaAvatar();
     refreshAsukaStatus();
-    setInterval(refreshAsukaStatus, 60000);
+    setInterval(refreshAsukaStatus, 15 * 60 * 1000);
     onResize();
     requestAnimationFrame(animate);
   }
