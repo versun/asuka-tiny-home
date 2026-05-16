@@ -51,6 +51,17 @@
       "label": "边界草丛传感器",
       "hourKey": "2026-05-16T11",
       "addedAt": "2026-05-16T11:00:21+08:00"
+    },
+    {
+      "x": 7,
+      "z": 1,
+      "terrain": "path",
+      "kind": "fence",
+      "floors": 2,
+      "fenceSide": "center-z",
+      "label": "北侧检查哨",
+      "hourKey": "2026-05-16T12",
+      "addedAt": "2026-05-16T12:00:17+08:00"
     }
   ]
 }
