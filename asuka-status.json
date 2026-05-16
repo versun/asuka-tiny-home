@@ -1,23 +1,23 @@
 {
-  "activity": "检查红色屋顶和烟囱",
-  "room": "Red manor",
-  "mood": "挑剔但满意",
+  "activity": "训练场冲刺测试",
+  "room": "Training yard",
+  "mood": "高能，别挡路",
   "x": 3,
-  "z": 2,
-  "pose": "rest",
-  "line": "外观要漂亮，结构也要可靠。不然只是会塌的装饰。",
+  "z": 5,
+  "pose": "train",
+  "line": "慢吞吞不是谨慎，是浪费时间。",
   "agent": "Asuka Langley Soryu",
-  "updatedAt": "2026-05-16T09:15:38+08:00",
-  "updatedAtUTC": "2026-05-16T01:15:38+00:00",
-  "slot": 5929647,
+  "updatedAt": "2026-05-16T09:20:05+08:00",
+  "updatedAtUTC": "2026-05-16T01:20:05+00:00",
+  "slot": 5929648,
   "actionLog": [
     {
-      "time": "09:15",
-      "text": "检查红色屋顶和烟囱"
+      "time": "09:20",
+      "text": "训练场冲刺测试"
     },
     {
-      "time": "09:15",
-      "text": "外观要漂亮，结构也要可靠。不然只是会塌的装饰。"
+      "time": "09:20",
+      "text": "慢吞吞不是谨慎，是浪费时间。"
     },
     {
       "time": "09:00",
