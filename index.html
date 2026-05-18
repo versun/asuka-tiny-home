@@ -104,13 +104,6 @@
     font-weight: 400;
     color: #a08454;
   }
-  .brand .sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 6px;
-    letter-spacing: 0.02em;
-  }
-
   .asuka-status-panel {
     position: fixed;
     left: 28px;
@@ -161,12 +154,6 @@
     border-radius: 999px;
     padding: 4px 7px;
     background: rgba(255, 248, 232, 0.74);
-  }
-  .asuka-status-line {
-    margin: 10px 0 0;
-    font-size: 12px;
-    line-height: 1.45;
-    color: #6d5746;
   }
   .asuka-action-log {
     margin-top: 10px;
@@ -1176,7 +1163,6 @@
 
   <div class="brand">
     <div class="title">Asuka's <em>Tiny Home</em></div>
-    <div class="sub">Red command tower · moat · training yard · garden. Obviously.</div>
   </div>
 
   <aside id="asuka-status-panel" class="asuka-status-panel" aria-live="polite">
@@ -1187,7 +1173,6 @@
       <span id="asuka-status-room">Command tower</span>
       <span id="asuka-status-updated">waiting</span>
     </div>
-    <p id="asuka-status-line" class="asuka-status-line">Don't just stare. Observe properly.</p>
     <div class="asuka-action-log" aria-label="Asuka action log">
       <div class="asuka-action-log-title">Action log</div>
       <ol id="asuka-action-log-list" class="asuka-action-log-list"></ol>
@@ -6266,10 +6251,8 @@
     const activity = document.getElementById('asuka-status-activity');
     const room = document.getElementById('asuka-status-room');
     const updated = document.getElementById('asuka-status-updated');
-    const line = document.getElementById('asuka-status-line');
     if (activity) activity.textContent = status.activity || ASUKA_STATUS_FALLBACK.activity;
     if (room) room.textContent = status.room || ASUKA_STATUS_FALLBACK.room;
-    if (line) line.textContent = status.line || ASUKA_STATUS_FALLBACK.line;
     if (updated) {
       const raw = status.updatedAt || '';
       const d = raw ? new Date(raw) : null;
