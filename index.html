@@ -2137,14 +2137,6 @@
     sunflowerStalk:  new THREE.MeshLambertMaterial({ color: 0x4d8a2a }),
     sunflowerPetal:  new THREE.MeshLambertMaterial({ color: 0xf2c849 }),
     sunflowerCenter: new THREE.MeshLambertMaterial({ color: 0x5a3a18 }),
-    animalWhite: new THREE.MeshLambertMaterial({ color: 0xf4efe3 }),
-    animalCream: new THREE.MeshLambertMaterial({ color: 0xd9b98a }),
-    animalBrown: new THREE.MeshLambertMaterial({ color: 0x8b5a32 }),
-    animalDark:  new THREE.MeshLambertMaterial({ color: 0x2a251f }),
-    animalPink:  new THREE.MeshLambertMaterial({ color: 0xe8a6a6 }),
-    duckBody:    new THREE.MeshLambertMaterial({ color: 0xf2d84b }),
-    duckBill:    new THREE.MeshLambertMaterial({ color: 0xe8892f }),
-
     cloud:     new THREE.MeshLambertMaterial({ color: 0xfdfcf8 }),
     cloudShade:new THREE.MeshLambertMaterial({ color: 0xdcd9d0 }),
 
@@ -2163,6 +2155,15 @@
 
     hover:     new THREE.MeshBasicMaterial({ color: 0x2a2722, transparent: true, opacity: 0.18, depthWrite: false }),
     hoverErase:new THREE.MeshBasicMaterial({ color: 0xb84838, transparent: true, opacity: 0.28, depthWrite: false }),
+  };
+
+  const M_ANIMAL = {
+    cowWhite:  new THREE.MeshLambertMaterial({ color: 0xf2eee0 }),
+    cowSpot:   new THREE.MeshLambertMaterial({ color: 0x2a2722 }),
+    cowMuzzle: new THREE.MeshLambertMaterial({ color: 0xeec7b0 }),
+    sheepWool: new THREE.MeshLambertMaterial({ color: 0xe8e2d2 }),
+    sheepFace: new THREE.MeshLambertMaterial({ color: 0x2a2722 }),
+    hoof:      new THREE.MeshLambertMaterial({ color: 0x2a2722 }),
   };
 
   function castReceive(obj) {
@@ -2375,126 +2376,57 @@
   }
 
 
-  function addAnimalLegs(g, mat, xSpread = 0.18, zSpread = 0.12, height = 0.16) {
-    for (const x of [-xSpread, xSpread]) {
-      for (const z of [-zSpread, zSpread]) {
-        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.045, height, 0.045), mat);
-        leg.position.set(x, height * 0.5, z);
-        g.add(leg);
-      }
-    }
-  }
-
-  function makeCat() {
+  function makeCow() {
     const g = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), M.animalDark);
-    body.scale.set(1.35, 0.62, 0.72);
-    body.position.set(0, 0.24, 0);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.26, 0.24), M_ANIMAL.cowWhite);
+    body.position.set(0, 0.22, 0);
     g.add(body);
-
-    const chest = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), M.animalWhite);
-    chest.scale.set(0.85, 0.55, 0.55);
-    chest.position.set(0.13, 0.25, 0);
-    g.add(chest);
-
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), M.animalDark);
-    head.position.set(0.30, 0.34, 0);
+    // Spots
+    const spot1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.05, 0.12), M_ANIMAL.cowSpot);
+    spot1.position.set(0.06, 0.36, 0.06);
+    g.add(spot1);
+    const spot2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.10), M_ANIMAL.cowSpot);
+    spot2.position.set(-0.08, 0.36, -0.08);
+    g.add(spot2);
+    // Head
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 0.16), M_ANIMAL.cowWhite);
+    head.position.set(0.27, 0.30, 0);
     g.add(head);
-    for (const z of [-0.07, 0.07]) {
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.13, 4), M.animalDark);
-      ear.position.set(0.30, 0.50, z);
-      ear.rotation.x = z < 0 ? 0.18 : -0.18;
-      g.add(ear);
-    }
-    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, 0.035), M.animalPink);
-    nose.position.set(0.43, 0.34, 0);
-    g.add(nose);
-    for (const z of [-0.045, 0.045]) {
-      const eye = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.024, 0.016), M.knob);
-      eye.position.set(0.40, 0.39, z);
-      g.add(eye);
-    }
-    addAnimalLegs(g, M.animalDark, 0.13, 0.12, 0.17);
-    const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.035, 0.34, 6), M.animalDark);
-    tail.position.set(-0.30, 0.35, 0.02);
-    tail.rotation.z = -0.72;
-    tail.userData = { part: 'tail', baseRotZ: tail.rotation.z };
-    g.add(tail);
-    g.userData = { kind: 'cat', animal: true, swayPhase: Math.random() * Math.PI * 2 };
-    g.scale.set(0.92, 0.92, 0.92);
+    const muzzle = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.10), M_ANIMAL.cowMuzzle);
+    muzzle.position.set(0.36, 0.26, 0);
+    g.add(muzzle);
+    // Legs (4 short)
+    [[0.13, -0.08], [0.13, 0.08], [-0.13, -0.08], [-0.13, 0.08]].forEach(([x, z]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.07), M_ANIMAL.hoof);
+      leg.position.set(x, 0.08, z);
+      g.add(leg);
+    });
+    g.userData = { kind: 'cow' };
     castReceive(g);
     return g;
   }
-
-  function makeRabbit() {
+  function makeSheep() {
     const g = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), M.animalWhite);
-    body.scale.set(1.18, 0.68, 0.82);
-    body.position.set(0, 0.25, 0);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.24, 0.22), M_ANIMAL.sheepWool);
+    body.position.set(0, 0.22, 0);
     g.add(body);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), M.animalWhite);
-    head.position.set(0.26, 0.38, 0);
+    // Wool puffs along the back
+    [[-0.10, 0.05], [0.00, 0.00], [0.10, 0.05]].forEach(([x, z]) => {
+      const puff = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.06, 0.10), M_ANIMAL.sheepWool);
+      puff.position.set(x, 0.36, z);
+      g.add(puff);
+    });
+    // Face
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.12), M_ANIMAL.sheepFace);
+    head.position.set(0.22, 0.28, 0);
     g.add(head);
-    for (const z of [-0.055, 0.055]) {
-      const ear = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.30, 0.035), M.animalWhite);
-      ear.position.set(0.27, 0.62, z);
-      ear.rotation.z = z < 0 ? -0.15 : 0.15;
-      ear.userData = { part: 'ear', baseRotZ: ear.rotation.z };
-      g.add(ear);
-    }
-    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.024, 0.032), M.animalPink);
-    nose.position.set(0.39, 0.37, 0);
-    g.add(nose);
-    for (const z of [-0.045, 0.045]) {
-      const eye = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.014), M.animalDark);
-      eye.position.set(0.36, 0.42, z);
-      g.add(eye);
-    }
-    addAnimalLegs(g, M.animalCream, 0.13, 0.11, 0.14);
-    const tail = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), M.animalWhite);
-    tail.position.set(-0.25, 0.30, 0);
-    tail.userData = { part: 'tail', baseRotZ: tail.rotation.z };
-    g.add(tail);
-    g.userData = { kind: 'rabbit', animal: true, swayPhase: Math.random() * Math.PI * 2 };
-    castReceive(g);
-    return g;
-  }
-
-  function makeDuck() {
-    const g = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), M.duckBody);
-    body.scale.set(1.20, 0.62, 0.82);
-    body.position.set(0, 0.25, 0);
-    g.add(body);
-    const chest = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), M.duckBody);
-    chest.position.set(0.20, 0.39, 0);
-    g.add(chest);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), M.duckBody);
-    head.position.set(0.31, 0.54, 0);
-    g.add(head);
-    const bill = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.045, 0.08), M.duckBill);
-    bill.position.set(0.43, 0.53, 0);
-    g.add(bill);
-    for (const z of [-0.045, 0.045]) {
-      const eye = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.014), M.animalDark);
-      eye.position.set(0.38, 0.59, z);
-      g.add(eye);
-    }
-    for (const z of [-0.08, 0.08]) {
-      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.025, 0.06), M.duckBill);
-      foot.position.set(0.03, 0.035, z);
-      g.add(foot);
-    }
-    for (const z of [-0.17, 0.17]) {
-      const wing = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 6), M.wheatHead);
-      wing.scale.set(0.72, 0.25, 1.0);
-      wing.position.set(-0.04, 0.27, z);
-      wing.rotation.x = z < 0 ? -0.28 : 0.28;
-      wing.userData = { part: 'wing', baseRotX: wing.rotation.x };
-      g.add(wing);
-    }
-    g.userData = { kind: 'duck', animal: true, swayPhase: Math.random() * Math.PI * 2 };
-    g.scale.set(0.92, 0.92, 0.92);
+    // Legs
+    [[0.10, -0.08], [0.10, 0.08], [-0.10, -0.08], [-0.10, 0.08]].forEach(([x, z]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.06), M_ANIMAL.hoof);
+      leg.position.set(x, 0.07, z);
+      g.add(leg);
+    });
+    g.userData = { kind: 'sheep' };
     castReceive(g);
     return g;
   }
@@ -4435,7 +4367,7 @@
       const r = cellRand(boardX + i, boardZ - i, seed);
       cells[x][z] = {
         terrain: 'grass',
-        kind: r < 0.46 ? 'tree' : (r < 0.66 ? 'tuft' : (r < 0.82 ? 'rock' : (r < 0.88 ? 'cat' : (r < 0.94 ? 'rabbit' : 'duck')))),
+        kind: r < 0.46 ? 'tree' : (r < 0.66 ? 'tuft' : (r < 0.82 ? 'rock' : (r < 0.91 ? 'cow' : 'sheep'))),
         floors: 1 + Math.floor(cellRand(boardX - i, boardZ + i, seed) * 3),
         buildingType: null,
         fenceSide: null,
@@ -4712,9 +4644,8 @@
     else if (cell.kind === 'pumpkin')   mesh = makePumpkin();
     else if (cell.kind === 'carrot')    mesh = makeCarrot();
     else if (cell.kind === 'sunflower') mesh = makeSunflower();
-    else if (cell.kind === 'cat')       mesh = makeCat();
-    else if (cell.kind === 'rabbit')    mesh = makeRabbit();
-    else if (cell.kind === 'duck')      mesh = makeDuck();
+    else if (cell.kind === 'cow')       mesh = makeCow();
+    else if (cell.kind === 'sheep')     mesh = makeSheep();
     else if (cell.kind === 'fence')     mesh = makeFence(normalizeFenceSide(cell.fenceSide), level);
     else if (cell.kind === 'house') {
       if (cell.buildingType === 'manor') mesh = makeManor(level);
@@ -5468,9 +5399,8 @@
     else if (kind === 'pumpkin')   mesh = (level >= MAX_FLOORS && isCarriagePumpkin(x, z)) ? makePumpkinCarriage() : makePumpkin();
     else if (kind === 'carrot')    mesh = makeCarrot();
     else if (kind === 'sunflower') mesh = makeSunflower();
-    else if (kind === 'cat')       mesh = makeCat();
-    else if (kind === 'rabbit')    mesh = makeRabbit();
-    else if (kind === 'duck')      mesh = makeDuck();
+    else if (kind === 'cow')       mesh = makeCow();
+    else if (kind === 'sheep')     mesh = makeSheep();
     else if (kind === 'fence') {
       if (world[x][z].terrain === 'path') {
         // Pick orientation from neighbouring path cells so the gate
@@ -5544,7 +5474,7 @@
     // Uneven natural objects get a random 90° rotation per cell so the
     // same kind doesn't look identical in every tile. Deterministic on
     // (x, z) via cellRand so re-renders keep the same orientation.
-    if (kind === 'rock' || kind === 'tree' || kind === 'tuft' || kind === 'cat' || kind === 'rabbit' || kind === 'duck') {
+    if (kind === 'rock' || kind === 'tree' || kind === 'tuft' || kind === 'cow' || kind === 'sheep') {
       const r = Math.floor(cellRand(x, z, 71) * 4); // 0..3
       mesh.rotation.y += r * (Math.PI / 2);
     }
@@ -5924,9 +5854,8 @@
     layout['6,3'] = { terrain: 'grass', kind: 'tuft', floors: 2 };
     layout['7,3'] = { terrain: 'grass', kind: 'rock', floors: 2 };
     layout['7,5'] = { terrain: 'grass', kind: 'tuft', floors: 2 };
-    layout['7,1'] = { terrain: 'grass', kind: 'cat', floors: 1 };
-    layout['4,6'] = { terrain: 'grass', kind: 'rabbit', floors: 1 };
-    layout['7,4'] = { terrain: 'grass', kind: 'duck', floors: 1 };
+    layout['7,1'] = { terrain: 'grass', kind: 'cow', floors: 1 };
+    layout['4,6'] = { terrain: 'grass', kind: 'sheep', floors: 1 };
     // Diagonal sweep — small (x+z) lands first, far corner lands last.
     // Objects land slightly after their tile so it feels like layers stacking.
     const TILE_STAGGER = 0.035;
@@ -6945,9 +6874,8 @@
     { id: 'carrot',    label: 'Carrot',    kind: 'carrot',    terrainOverride: 'dirt', color: '#e06a2a', shortcut: 'a', group: 'crops' },
     { id: 'sunflower', label: 'Sunflower', kind: 'sunflower', terrainOverride: 'dirt', color: '#f7b730', shortcut: 's', group: 'crops' },
     { id: 'tuft',   label: 'Tuft',   kind: 'tuft',  color: '#86b53e', shortcut: 't', group: 'nature' },
-    { id: 'cat',    label: 'Cat',    kind: 'cat',   color: '#2a251f', shortcut: 'k', group: 'nature' },
-    { id: 'rabbit', label: 'Rabbit', kind: 'rabbit',color: '#f4efe3', shortcut: 'b', group: 'nature' },
-    { id: 'duck',   label: 'Duck',   kind: 'duck',  color: '#f2d84b', shortcut: 'y', group: 'nature' },
+    { id: 'cow',    label: 'Cow',    kind: 'cow',   color: '#f2eee0', shortcut: 'k', group: 'nature' },
+    { id: 'sheep',  label: 'Sheep',  kind: 'sheep', color: '#e8e2d2', shortcut: 'b', group: 'nature' },
     { id: 'erase',  label: 'Erase',  erase: true, color: 'transparent', eraser: true, shortcut: 'e', group: 'tools' },
   ];
 
@@ -6999,9 +6927,8 @@
     if (k === 'pumpkin')   return makePumpkin();
     if (k === 'carrot')    return makeCarrot();
     if (k === 'sunflower') return makeSunflower();
-    if (k === 'cat')       return makeCat();
-    if (k === 'rabbit')    return makeRabbit();
-    if (k === 'duck')      return makeDuck();
+    if (k === 'cow')       return makeCow();
+    if (k === 'sheep')     return makeSheep();
     if (k === 'fence')     return makeFence('n', 1);
     if (k === 'house') {
       const v = tool.activeVariant;
@@ -8709,16 +8636,6 @@
         obj.rotation.x = Math.cos(t * 0.65 + obj.userData.swayPhase) * 0.012;
       } else if (k === 'tuft') {
         obj.rotation.z = Math.sin(t * 1.2 + (obj.userData.gx + obj.userData.gz)) * 0.05;
-      } else if (obj.userData.animal && !obj.userData.landing) {
-        const phase = obj.userData.swayPhase || 0;
-        obj.position.y = (obj.userData.baseY || obj.position.y) + Math.sin(t * 2.2 + phase) * 0.018;
-        obj.rotation.z = Math.sin(t * 1.7 + phase) * 0.018;
-        obj.traverse(part => {
-          if (!part.userData || !part.userData.part) return;
-          if (part.userData.part === 'tail') part.rotation.z = (part.userData.baseRotZ || 0) + Math.sin(t * 3.4 + phase) * 0.12;
-          if (part.userData.part === 'ear')  part.rotation.z = (part.userData.baseRotZ || 0) + Math.sin(t * 2.1 + phase) * 0.045;
-          if (part.userData.part === 'wing') part.rotation.x = (part.userData.baseRotX || 0) + Math.sin(t * 3.0 + phase) * 0.075;
-        });
       }
     }
 
