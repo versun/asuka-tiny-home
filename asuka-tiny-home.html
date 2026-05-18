@@ -365,75 +365,6 @@
     pointer-events: none;
   }
 
-  /* Audio panel — persistent floating control, sits above the toolbar so it
-     never overlaps the tool buttons on either desktop or mobile widths. */
-  .audio-panel {
-    position: fixed;
-    bottom: 140px;
-    right: 14px;
-    z-index: 40;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 200px;
-    backdrop-filter: blur(4px);
-  }
-  @media (max-width: 800px) {
-    .audio-panel {
-      bottom: 160px;
-      right: 8px;
-      min-width: 170px;
-      padding: 6px 8px;
-    }
-  }
-  .audio-row {
-    display: grid;
-    grid-template-columns: 26px 1fr auto;
-    align-items: center;
-    gap: 8px;
-  }
-  .audio-row .audio-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .audio-row input[type="range"] {
-    width: 100%;
-    accent-color: var(--ink);
-  }
-  .audio-mute {
-    width: 26px;
-    height: 26px;
-    padding: 0;
-    border: 1px solid var(--line);
-    background: var(--panel);
-    color: var(--ink);
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .audio-mute svg {
-    width: 14px;
-    height: 14px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .audio-mute .ic-off { display: none; }
-  .audio-mute.muted { color: var(--muted); }
-  .audio-mute.muted .ic-on { display: none; }
-  .audio-mute.muted .ic-off { display: block; }
-
   /* Custom tooltip with 500ms hover delay, no delay on hide. */
   [data-tooltip] { position: relative; }
   [data-tooltip]::after {
@@ -1191,24 +1122,6 @@
     <span id="unsaved-banner-text">Areas outside your 8×8 grid aren't saved</span>
   </div>
 
-  <div id="audio-panel" class="audio-panel" role="group" aria-label="Sound controls">
-    <div class="audio-row">
-      <button type="button" class="audio-mute" id="audio-music-mute" data-tooltip="Mute music" aria-label="Mute music">
-        <svg class="ic-on" viewBox="0 0 24 24"><path d="M9 18V6l11-3v12"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="15" r="3"/></svg>
-        <svg class="ic-off" viewBox="0 0 24 24"><path d="M9 18V6l11-3v12"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="15" r="3"/><path d="M3 3l18 18"/></svg>
-      </button>
-      <input type="range" id="audio-music-vol" min="0" max="100" step="1" aria-label="Music volume" />
-      <span class="audio-label">Music</span>
-    </div>
-    <div class="audio-row">
-      <button type="button" class="audio-mute" id="audio-sfx-mute" data-tooltip="Mute SFX" aria-label="Mute SFX">
-        <svg class="ic-on" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-        <svg class="ic-off" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg>
-      </button>
-      <input type="range" id="audio-sfx-vol" min="0" max="100" step="1" aria-label="SFX volume" />
-      <span class="audio-label">SFX</span>
-    </div>
-  </div>
 
   <div class="controls">
     <a class="btn icon" id="github-link" href="https://github.com/jasonkneen/tiny-world-builder" target="_blank" rel="noopener noreferrer" data-tooltip="View on GitHub" aria-label="View Tiny World Builder on GitHub">
